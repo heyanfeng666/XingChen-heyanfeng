@@ -4,6 +4,7 @@ import time
 from PyQt5.QtNetwork import QTcpSocket
 from PyQt5.QtNetwork import QAbstractSocket
 from PyQt5.QtCore import QThread, pyqtSignal
+from src.main.SignalManager import SignalManager
 
 
 class CtrlNetwork:
@@ -15,7 +16,6 @@ class CtrlNetwork:
         self.socket.readyRead.connect(self.OnReadyRead)
         self.socket.connected.connect(self.OnConnected)
         self.socket.error.connect(self.OnError)
-        self.socket.stateChanged.connect(self.SocketStateChanged)
 
     def OnConnected(self):
         print(f"Connected to {self.ip}:{self.port}")
@@ -28,13 +28,17 @@ class CtrlNetwork:
         self.socket.connectToHost(self.ip, self.port)
 
     def OnReadyRead(self):
+        from src import StartXingChen
         data = self.socket.readAll().data().decode("utf-8")
-        print(data)
-
-    def SocketStateChanged(self, socket_state: QAbstractSocket):
-        if socket_state == QAbstractSocket.HostLookupState or socket_state == QAbstractSocket.ConnectingState:
-            print("这里好没有写完！！！！！！！！！！")
-            pass
+        data = data.split(' ', 1)
+        if data[0] == "message":
+            SignalManager.MessageReceivedSignal.emit(data[1], data[2])
+        elif data[0] == "XingChen Server":
+            if data[2] == StartXingChen.VERSION:
+                print("成功连接服务器")
+                self.SendData("Xing Chen Client " + StartXingChen.VERSION)
+            else:
+                print("服务器版本不匹配")
 
     def StartCheck(self):
         self.checkNetworkThread = threading.Thread(target=self.CheckNetwork)
@@ -51,7 +55,7 @@ class CtrlNetwork:
 
     def SendData(self, data):
         if self.socket.state() == QTcpSocket.ConnectedState:
-            self.socket.write(data)
+            self.socket.write(data.encode("utf-8"))
             self.socket.flush()
 
     def Disconnect(self):

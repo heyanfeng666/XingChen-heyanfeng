@@ -3,6 +3,7 @@ import configparser
 from PyQt5.QtNetwork import QAbstractSocket
 
 from src.untl.ControlNetwork import CtrlNetwork
+from src.main.SignalManager import SignalManager
 
 from datetime import datetime
 import time
@@ -17,16 +18,10 @@ class XingChenNetwork:
         self.server = CtrlNetwork()
         self.server.Connect(host, port)
 
-    def Send(self, data):
-        if self.server.socket.state() == QAbstractSocket.ConnectedState:
-            self.server.SendData(data)
-            print(f"成功发送消息{data}给{self.server.socket.peerAddress().toString()}:{self.server.socket.peerPort()}")
-        elif (self.server.socket.state() == QAbstractSocket.UnconnectedState
-              or self.server.socket.state() == QAbstractSocket.HostLookupState
-              or self.server.socket.state() == QAbstractSocket.ConnectingState
-              or self.server.socket.state() == QAbstractSocket.ClosingState
-              or self.server.socket.state() == QAbstractSocket.BoundState):
-            raise SocketNoHaveConnectedError()
+
+    def SendMessage(self, goal: str, context: str):
+        self.server.SendData(f"send_message {goal} {context}")
+        SignalManager.SendMessageSignal.connect(self.SendMessage)
 
 
 class SocketNoHaveConnectedError(Exception):

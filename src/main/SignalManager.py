@@ -5,8 +5,15 @@ class SignalManager(QObject):
     StartXingChenSignal = pyqtSignal()
     StopXingChenSignal = pyqtSignal()
 
-    def StartXingChen(self):
-        self.StartXingChenSignal.emit()
+    SendMessageSignal = pyqtSignal(str, str)
+    MessageReceivedSignal = pyqtSignal(str, str)
+    SendCompleteSignal = pyqtSignal(bool, str)
+    ConnectionChangedSignal = pyqtSignal(bool)
 
-    def StopXingChen(self):
-        self.StopXingChenSignal.emit()
+    CriticalMessageBox = pyqtSignal(str, str)
+    WarningMessageBox = pyqtSignal(str, str)
+    InformationMessageBox = pyqtSignal(str, str)
+
+    ConnectedServer = pyqtSignal()
+
+    NetworkStateChangedSignal = pyqtSignal(str)

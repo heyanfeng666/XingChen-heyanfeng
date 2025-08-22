@@ -7,3 +7,5 @@ class ReturnState(typing.NamedTuple):
 
 class MessageType(typing.NamedTuple):
     TEXT = 0
+
+

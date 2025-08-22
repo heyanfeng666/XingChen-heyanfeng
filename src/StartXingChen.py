@@ -8,6 +8,8 @@ from PyQt5.QtCore import QObject, pyqtSignal, QThread, pyqtSlot, Qt
 
 from src.main.Widgets import ChatWindow
 
+VERSION = "Test 3.0.0"
+
 
 def CreateFolder():
     from src.untl.ControlFiles import CreateDirs, CheckDirs, CtrlFiles
